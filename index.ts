@@ -9,6 +9,7 @@ const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
+    preflightContinue: true,
   },
 });
 
@@ -33,9 +34,7 @@ io.on("connection", (socket) => {
     ({ username, roomId }: { username: string; roomId: string }) => {
       const cleanRoom = typeof roomId === "string" ? roomId.trim() : "";
       const cleanUsername =
-        typeof username === "string"
-          ? username.trim().substring(0, 20)
-          : "";
+        typeof username === "string" ? username.trim().substring(0, 20) : "";
 
       if (!cleanRoom) {
         socket.emit("room error", "Invalid room ID");
@@ -74,19 +73,14 @@ io.on("connection", (socket) => {
       socket.emit("room set", cleanRoom);
 
       // Notify room
-      io.to(cleanRoom).emit(
-        "user count",
-        Object.keys(room.users).length
-      );
+      io.to(cleanRoom).emit("user count", Object.keys(room.users).length);
       io.to(cleanRoom).emit("user joined", cleanUsername);
     }
   );
 
   socket.on("chat message", (content: string) => {
     // Determine the room this socket is in
-    const roomId = Array.from(socket.rooms).find(
-      (rid) => rid !== socket.id
-    );
+    const roomId = Array.from(socket.rooms).find((rid) => rid !== socket.id);
     if (!roomId) return;
     const room = rooms[roomId];
     if (!room) return;
@@ -113,10 +107,7 @@ io.on("connection", (socket) => {
         room.usernames.delete(username);
         socket.leave(roomId);
 
-        io.to(roomId).emit(
-          "user count",
-          Object.keys(room.users).length
-        );
+        io.to(roomId).emit("user count", Object.keys(room.users).length);
         io.to(roomId).emit("user left", username);
 
         // Clean up empty room
@@ -130,6 +121,4 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => {
-  console.log("Server running at http://localhost:3001");
-});
+server.listen(process.env.PORT || 3001)
