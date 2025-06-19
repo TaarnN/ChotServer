@@ -16,6 +16,6 @@
     "socket.io": "^4.8.1"
   },
   "scripts": {
-    "start": "bun server.ts"
+    "start": "bun index.ts"
   }
 }

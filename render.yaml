@@ -3,7 +3,7 @@ services:
     name: chot
     env: node
     buildCommand: "bun install"
-    startCommand: "bun server.ts"
+    startCommand: "bun index.ts"
     envVars:
       - key: BUN_ENV
         value: production
