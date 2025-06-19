@@ -27,7 +27,11 @@ const rooms: Record<string, Room> = {};
 const MAX_USERS_PER_ROOM = 40;
 
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+  console.log("✅ User connected:", socket.id);
+
+  socket.onAny((event, ...args) => {
+    console.log(`📥 Event from ${socket.id}:`, event, args);
+  });
 
   socket.on(
     "join room",
@@ -121,4 +125,4 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(process.env.PORT || 3001)
+server.listen(process.env.PORT || 3001);
